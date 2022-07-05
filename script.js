@@ -1,7 +1,8 @@
 let videoCont = document.querySelector(".video-cont");
 let video = document.querySelector("video");
 let recordBtnCont = document.querySelector(".record-btn-cont");
-let captureBtnCont = document.querySelector('.capture-btn-cont');
+let captureBtnCont = document.querySelector(".capture-btn-cont");
+let timerCont = document.querySelector(".timer-cont");
 
 let recordFlag = false;
 let recorder;
@@ -37,18 +38,55 @@ recordBtnCont.addEventListener("click", (e) => {
   recordFlag = !recordFlag;
   if (recordFlag) {
     recorder.start();
+    startTimer();
     console.log("record");
   } else {
     recorder.stop();
+    stopTimer();
   }
 });
 
-
-captureBtnCont.addEventListener('click', (e)=>{
-  const canvas = document.createElement('canvas');
+//image Capture
+captureBtnCont.addEventListener("click", (e) => {
+  const canvas = document.createElement("canvas");
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
 
-  canvas.getContext('2D', )
+  canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataURL = canvas.toDataURL();
+  let a = document.createElement("a");
+  a.href = dataURL;
+  a.download = "img";
+  a.click();
+});
 
-})
+// timer
+let counter = 0;
+let timer = document.querySelector(".timer");
+let timerId;
+function startTimer() {
+  timerCont.style.display = "block";
+  function displayTimer() {
+    counter++;
+    let totalSeconds = counter;
+    let hour = Number.parseInt(totalSeconds / 3600);
+    totalSeconds = totalSeconds % 3600;
+
+    let minutes = Number.parseInt(totalSeconds / 60);
+    totalSeconds = totalSeconds % 60;
+
+    let seconds = totalSeconds;
+    hour = hour < 10 ? `0${hour}` : hour;
+    minutes = minutes < 10 ? `0${minutes}` : minutes;
+    seconds = seconds < 10 ? `0${seconds}` : seconds;
+    timer.innerText = `${hour}:${minutes}:${seconds}`;
+  }
+  timerId = setInterval(displayTimer, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerId);
+  counter = 0;
+  timer.innerText = `00:00:00`;
+  timerCont.style.display = "none";
+}
