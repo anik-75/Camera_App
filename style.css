@@ -24,10 +24,11 @@ video {
   display: flex;
   flex-direction: column;
   justify-content: space-around;
+  z-index: 3;
 }
 
 .record-btn-cont {
-  width:100%;
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -44,7 +45,7 @@ video {
 }
 
 .capture-btn-cont {
-  width:100%;
+  width: 100%;
   height: 40%;
   display: flex;
   justify-content: center;
@@ -52,18 +53,68 @@ video {
   border-radius: 50%;
   border: 5px solid white;
 }
-.capture-btn{
-  background-color:aliceblue;
+.capture-btn {
+  background-color: aliceblue;
   border-radius: 50%;
-  height:60%;
-  width:60%;
+  height: 60%;
+  width: 60%;
 }
 
-.timer-cont{
+.timer-cont {
   display: none;
-  position:absolute;
-  bottom:7rem;
+  position: absolute;
+  bottom: 7rem;
   left: 5rem;
-  color:aliceblue;
+  color: aliceblue;
   font-size: 1.5rem;
+}
+
+.filter-layer {
+  z-index: 2;
+  height: 100vh;
+  width: 100vw;
+  /* background-color: red; */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.filter-cont {
+  height: 16rem;
+  width: 5rem;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: calc((100vh - 16rem) / 2);
+  left: 5rem;
+  z-index: 3;
+}
+
+.filter {
+  background-image: url("https://picsum.photos/seed/picsum/200/300");
+  background-repeat: no-repeat;
+  height: 4rem;
+  background-size: 100% 100%;
+  background-blend-mode: color-burn;
+}
+
+.yellow {
+  background-color: #f1c5723f;
+}
+
+.dracula{
+  background-color: rgba(180, 131, 229, 0.377);
+}
+
+.sunshine{
+  background-color: rgba(255, 140, 0, 0.397);
+}
+
+.library{
+  position: absolute;
+  bottom: 5rem;
+  right : 5.5rem;
+  color: white;
+  font-size: 3rem;
+  z-index: 2;
 }

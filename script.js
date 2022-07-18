@@ -3,6 +3,7 @@ let video = document.querySelector("video");
 let recordBtnCont = document.querySelector(".record-btn-cont");
 let captureBtnCont = document.querySelector(".capture-btn-cont");
 let timerCont = document.querySelector(".timer-cont");
+let filterColor = "transparent";
 
 let recordFlag = false;
 let recorder;
@@ -20,10 +21,22 @@ navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
   recorder.addEventListener("stop", (e) => {
     let blob = new Blob(chunks, { type: "video/mp4" });
     const videoURL = URL.createObjectURL(blob);
-    let a = document.createElement("a");
-    a.href = videoURL;
-    a.download = "stream.mp4";
-    a.click();
+
+    if (db) {
+      let videoID = shortid();
+      let dbTransaction = db.transaction("video", "readwrite");
+      let videoStore = dbTransaction.objectStore("video");
+      let videoEntry = {
+        id: videoID,
+        blobData: blob,
+      };
+      videoStore.add(videoEntry);
+    }
+
+    // let a = document.createElement("a");
+    // a.href = videoURL;
+    // a.download = "stream.mp4";
+    // a.click();
   });
   recorder.addEventListener("dataavailable", (e) => {
     chunks.push(e.data);
@@ -52,12 +65,30 @@ captureBtnCont.addEventListener("click", (e) => {
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
 
-  canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+  let ctx = canvas.getContext("2d");
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  //filter
+  ctx.fillStyle = filterColor;
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
   const dataURL = canvas.toDataURL();
-  let a = document.createElement("a");
-  a.href = dataURL;
-  a.download = "img";
-  a.click();
+
+  if (db) {
+    let imageId = shortid();
+    const imageDBTransaction = db.transaction("image", "readwrite");
+    const imageObjectStore = imageDBTransaction.objectStore("image");
+    let imageEntry = {
+      id: imageId,
+      imageUrl: dataURL,
+    };
+    imageObjectStore.add(imageEntry);
+  }
+
+  // let a = document.createElement("a");
+  // a.href = dataURL;
+  // a.download = "img";
+  // a.click();
 });
 
 // timer
@@ -90,3 +121,21 @@ function stopTimer() {
   timer.innerText = `00:00:00`;
   timerCont.style.display = "none";
 }
+
+//filter
+let filterLayer = document.querySelector(".filter-layer");
+console.log(filterLayer);
+let filters = document.querySelectorAll(".filter");
+filters.forEach((filterEle) => {
+  filterEle.addEventListener("click", (e) => {
+    filterColor =
+      getComputedStyle(filterEle).getPropertyValue("background-color");
+    filterLayer.style.backgroundColor = filterColor;
+    console.log(filterColor);
+  });
+});
+
+let library = document.querySelector(".library");
+library.addEventListener("click", (e) => {
+  location.assign("./gallery.html");
+});
